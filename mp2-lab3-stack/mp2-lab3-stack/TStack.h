@@ -67,9 +67,9 @@ public:
 
 class Calculator {
   string expr, postfix;
-  TStack<char> stc;
+  TStack<char> stc, stdd;
 public:
-  Calculator() :stc(50) {}
+  Calculator() :stc(100) {}
   void SetExpr(const string& _expr) {
     expr = _expr;
   }
@@ -109,6 +109,53 @@ public:
           t = stc.pop();
         }
       }
+	  if (str[i] == '+' || str[i] == '-' || str[i] == '*' || str[i] == '/' || str[i] == '^') {
+		  char t = stc.pop();
+		  postfix += ' ';
+		  while (Prior(str[i]) <= Prior(t)) {
+			  postfix += t;
+			  char t = stc.pop();
+		  }
+		  stc.push(t);
+		  stc.push(str[i]);
+	  }
     }
+  }
+  double Calc() {
+	  stdd.Clear();
+	  for (int i = 0; i < postfix.size(); i++) {
+		  if (postfix[i] <= '9' && postfix[i] >= '0' || postfix[i] == '.') {
+			  char *tmp;
+			  double d = strtod(&postfix[i], &tmp);
+			  stdd.push(d);
+			  int k = tmp - &postfix[i];
+			  i += k - 1;
+		  }
+		  if (postfix[i] == '+' || postfix[i] == '-' || postfix[i] == '*' || postfix[i] == '/' || postfix[i] == '^') {
+			  double op1, op2 = stdd.pop();
+			  op1 = stdd.pop();
+			  if (postfix[i] = '+') {
+				  double res = op1 + op2;
+				  stdd.push(res);
+			  }
+			  if (postfix[i] = '-') {
+				  double res = op1 - op2;
+				  stdd.push(res);
+			  }
+			  if (postfix[i] = '*') {
+				  double res = op1 * op2;
+				  stdd.push(res);
+			  }
+			  if (postfix[i] = '/') {
+				  double res = op1 / op2;
+				  stdd.push(res);
+			  }
+			  if (postfix[i] = '^') {
+				  double res = pow(op1, op2);
+				  stdd.push(res);
+			  }
+		  }
+	  }
+	  return stdd.pop();
   }
 };
